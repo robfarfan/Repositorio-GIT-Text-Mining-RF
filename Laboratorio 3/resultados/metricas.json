@@ -1,0 +1,40 @@
+{
+  "imagen": "moneda en papa.jpg",
+  "dimensiones_originales": [
+    4000,
+    3000
+  ],
+  "centro_moneda_px_original": [
+    2580,
+    2240
+  ],
+  "radio_moneda_px_original": 290,
+  "area_moneda_px2": 264207.94,
+  "area_papa_px2": 3052740.0,
+  "area_relativa_pct": 8.65,
+  "sensibilidad_pct": [
+    8.25,
+    9.37
+  ],
+  "centro_papa_escala_05": [
+    1061.68,
+    1085.18
+  ],
+  "distancia_moneda_desde_centro_escala_05": 230.96,
+  "contraste_radial_moneda": 48.72,
+  "margen_vs_zona_superior_derecha": 13.08,
+  "criterio_seleccion": "búsqueda circular desde el centro de la papa hacia los extremos",
+  "parametros": {
+    "escala": 0.5,
+    "gaussiano": 15,
+    "canny_papa": [
+      20,
+      60
+    ],
+    "penalizacion_distancia": 0.012,
+    "rango_radio_escala_05": [
+      120,
+      240
+    ]
+  }
+}
