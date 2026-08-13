@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Text Mining &amp; Image Recognition — Laboratorio No. 4</title>
+  <style>
+    @page { size: A4; margin: 10mm 12mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #1f2933;
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9.2pt;
+      line-height: 1.28;
+    }
+    .page {
+      min-height: 276mm;
+      page-break-after: always;
+      position: relative;
+      padding-bottom: 8mm;
+    }
+    .page:last-child { page-break-after: auto; }
+    header {
+      border-bottom: 2px solid #355c8a;
+      margin-bottom: 4mm;
+      padding-bottom: 2.5mm;
+    }
+    .course { color: #355c8a; font-size: 10pt; font-weight: 700; letter-spacing: .2px; }
+    h1 { font-size: 17pt; line-height: 1.12; margin: 1.2mm 0 0; color: #172b3a; }
+    h2 { font-size: 11.2pt; margin: 3.2mm 0 1.2mm; color: #274d73; }
+    p { margin: 0 0 1.8mm; text-align: justify; }
+    .lead {
+      background: #eef4f9;
+      border-left: 4px solid #355c8a;
+      padding: 2.5mm 3mm;
+      margin: 0 0 3mm;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+    .card { border: 1px solid #d7dee5; border-radius: 2mm; padding: 2.5mm 3mm; }
+    ul { margin: 1mm 0 1.5mm 4.5mm; padding: 0; }
+    li { margin-bottom: 1mm; }
+    table { width: 100%; border-collapse: collapse; margin: 2mm 0; font-size: 8.4pt; }
+    th, td { border: 1px solid #cfd7df; padding: 1.35mm 1.6mm; text-align: right; }
+    th { background: #355c8a; color: white; font-weight: 700; }
+    th:first-child, td:first-child { text-align: left; }
+    tr.best td { background: #f8ead2; font-weight: 700; }
+    figure { margin: 2mm 0 1.5mm; }
+    figure img { display: block; width: 100%; max-height: 76mm; object-fit: contain; }
+    figcaption { margin-top: 1mm; color: #52606d; font-size: 7.6pt; text-align: center; }
+    .compact { font-size: 8.5pt; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2mm; margin: 2mm 0 3mm; }
+    .kpi { border-top: 3px solid #d18b2c; background: #faf7f2; padding: 2mm; }
+    .kpi strong { display: block; font-size: 13pt; color: #8a5716; }
+    .kpi span { display: block; font-size: 7.5pt; color: #52606d; }
+    .note { font-size: 8.2pt; color: #44515d; }
+    footer { position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid #cfd7df; padding-top: 1.5mm; color: #66727d; font-size: 7.4pt; }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <header>
+      <div class="course">Text Mining &amp; Image Recognition · Laboratorio No. 4</div>
+      <h1>Clasificación de dígitos MNIST: comparación entre ANN y CNN</h1>
+    </header>
+
+    <div class="lead"><strong>Resultado principal.</strong> La red neuronal convolucional (CNN) fue el mejor enfoque: alcanzó 98.89% de exactitud y 98.88% de F1 macro en 8,400 imágenes de prueba. Superó a la red neuronal artificial (ANN) en 1.76 y 1.78 puntos porcentuales, respectivamente, y redujo los errores de 241 a 93.</div>
+
+    <div class="grid">
+      <div>
+        <h2>Objetivo y datos</h2>
+        <p>Se clasificaron dígitos manuscritos del 0 al 9 usando <code>train.csv</code>: 42,000 observaciones, una etiqueta y 784 intensidades de píxel. No se detectaron valores faltantes; los píxeles se encontraron en el rango esperado de 0 a 255.</p>
+        <p>Los datos se dividieron de forma estratificada: 33,600 imágenes (80%) para entrenamiento y 8,400 (20%) para prueba, con semilla 42. El conjunto de prueba se mantuvo intacto hasta la evaluación final.</p>
+      </div>
+      <div>
+        <h2>Preprocesamiento y entrada</h2>
+        <p>Cada fila se normalizó a [0,1] y se reconstruyó mediante <em>reshape</em> como una imagen <strong>28×28×1</strong>. La CNN recibió directamente estas matrices y conservó la vecindad espacial. La ANN recibió las mismas imágenes, pero una capa <code>Flatten</code> las convirtió internamente en vectores de 784 elementos.</p>
+        <p>Esta diferencia implementa la indicación de la clase 05: la red convolucional opera con la imagen bidimensional, mientras la red artificial requiere una representación aplanada.</p>
+      </div>
+    </div>
+
+    <h2>Arquitecturas y entrenamiento</h2>
+    <div class="grid compact">
+      <div class="card"><strong>ANN (109,386 parámetros)</strong><br>Flatten → Dense(128, ReLU) → Dropout(0.20) → Dense(64, ReLU) → Dropout(0.20) → Dense(10, Softmax).</div>
+      <div class="card"><strong>CNN (421,642 parámetros)</strong><br>Conv2D(32, 3×3) → MaxPool(2×2) → Conv2D(64, 3×3) → MaxPool(2×2) → Flatten → Dense(128, ReLU) → Dropout(0.30) → Dense(10, Softmax).</div>
+    </div>
+    <p class="note">Ambas redes se implementaron con TensorFlow/Keras, optimizador Adam, entropía cruzada categórica dispersa, lotes de 128, hasta 10 épocas y 10% de validación interna. Se utilizó parada temprana con restauración de los mejores pesos. Estas elecciones siguen el flujo de las clases 04 y 05.</p>
+
+    <h2>Comparación sobre el mismo conjunto de prueba</h2>
+    <table>
+      <thead><tr><th>Modelo</th><th>Exactitud</th><th>Precisión macro</th><th>Recall macro</th><th>F1 macro</th><th>Log loss</th><th>Entrenamiento</th></tr></thead>
+      <tbody>
+        <tr><td>ANN</td><td>0.9713</td><td>0.9710</td><td>0.9711</td><td>0.9711</td><td>0.0971</td><td>5.17 s</td></tr>
+        <tr class="best"><td>CNN</td><td>0.9889</td><td>0.9888</td><td>0.9889</td><td>0.9888</td><td>0.0407</td><td>81.75 s</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <img src="comparacion_metricas.png" alt="Comparación de exactitud, precisión, recall y F1 macro de ANN y CNN">
+      <figcaption>Figura 1. Métricas calculadas sobre 8,400 observaciones no utilizadas para ajustar los modelos.</figcaption>
+    </figure>
+
+    <footer>Página 1 de 2 · Fuente de datos: train.csv · Resultados reproducibles en Laboratorio_4_MNIST_ANN_vs_CNN.ipynb</footer>
+  </section>
+
+  <section class="page">
+    <header>
+      <div class="course">Text Mining &amp; Image Recognition · Laboratorio No. 4</div>
+      <h1>Análisis, limitaciones y conclusión</h1>
+    </header>
+
+    <div class="kpis">
+      <div class="kpi"><strong>+1.78 pp</strong><span>ventaja de F1 macro</span></div>
+      <div class="kpi"><strong>61.4%</strong><span>menos errores de prueba</span></div>
+      <div class="kpi"><strong>58.1%</strong><span>menor pérdida logarítmica</span></div>
+      <div class="kpi"><strong>15.8×</strong><span>más tiempo de entrenamiento</span></div>
+    </div>
+
+    <h2>Patrones de error</h2>
+    <p>La mejora de la CNN no se limita a la exactitud: precisión, <em>recall</em> y F1 macro permanecen alrededor de 98.9%, lo que evidencia rendimiento equilibrado entre las diez clases. La ANN produjo 241 errores; sus confusiones más frecuentes fueron 4→9 (19 casos), 3→5 (17) y 5→3 (11). La CNN redujo el total a 93 errores; sus mayores confusiones individuales fueron 8→9 y 9→4 (seis casos cada una).</p>
+
+    <figure>
+      <img src="matrices_confusion.png" alt="Matrices de confusión de ANN y CNN">
+      <figcaption>Figura 2. La mayor concentración en la diagonal de la CNN muestra una separación más consistente de los dígitos.</figcaption>
+    </figure>
+
+    <div class="grid">
+      <div>
+        <h2>Interpretación</h2>
+        <p>La CNN aprovecha patrones locales —bordes, trazos y combinaciones espaciales— mediante filtros aprendidos y conserva información que la ANN pierde al aplanar la imagen. El <em>max pooling</em> reduce dimensionalidad y retiene activaciones dominantes. Esto explica la mejora de 148 aciertos adicionales sobre el mismo conjunto de prueba.</p>
+        <p>La ganancia predictiva tiene un costo: la CNN utilizó 3.85 veces más parámetros y tardó 15.8 veces más en entrenarse en CPU. Sin embargo, su tiempo de inferencia para las 8,400 imágenes fue 0.58 s, adecuado para esta escala.</p>
+      </div>
+      <div>
+        <h2>Limitaciones y robustez</h2>
+        <ul>
+          <li>Se evaluó una partición estratificada reproducible, no validación cruzada repetida.</li>
+          <li>Los tiempos dependen del hardware y no deben generalizarse.</li>
+          <li>Las arquitecturas son compactas; no se realizó búsqueda exhaustiva de hiperparámetros.</li>
+          <li>La prueba procede del mismo dataset; falta validar imágenes externas y calibración probabilística.</li>
+        </ul>
+        <p>Como controles se verificaron estructura, rangos, etiquetas, ausencia de nulos, balance por clase y separación estratificada. Las métricas macro evitan que una clase numerosa domine la conclusión.</p>
+      </div>
+    </div>
+
+    <h2>Conclusión</h2>
+    <div class="lead"><strong>Se selecciona la CNN.</strong> Su exactitud de 98.89%, F1 macro de 98.88% y menor pérdida muestran una generalización superior para MNIST. El resultado respalda la hipótesis expuesta en la clase 05: conservar la geometría 28×28 y aprender características con convoluciones ofrece una ventaja real frente a una ANN que trabaja con los píxeles aplanados. La ANN sigue siendo una alternativa rápida y sólida (97.13%), pero la CNN es preferible cuando la prioridad es maximizar la calidad de clasificación.</div>
+
+    <p class="note"><strong>Reproducibilidad.</strong> Python 3.12; TensorFlow 2.21; pandas 3.0.5; NumPy 2.5.2; scikit-learn 1.9.0. El notebook ejecutado contiene código, salidas, curvas, reportes por clase y análisis de errores. Referencias principales: <em>transcript clase 04.docx</em> (arquitectura CNN) y <em>transcript clase 05.docx</em> (instrucciones del Laboratorio No. 4), consultadas sin modificación.</p>
+
+    <footer>Página 2 de 2 · Métricas calculadas el 13 de agosto de 2026 · Reporte académico</footer>
+  </section>
+</body>
+</html>
