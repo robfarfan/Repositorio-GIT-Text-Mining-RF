@@ -2,7 +2,7 @@
 
 Proyecto del curso **Text Mining & Image Recognition** que compara una red neuronal artificial (ANN) y una red neuronal convolucional (CNN) para clasificar imágenes de dígitos manuscritos del 0 al 9.
 
-La solución fue desarrollada en Python con TensorFlow/Keras y sigue las guías proporcionadas en las clases, especialmente las instrucciones del Laboratorio No. 4 incluidas en `transcript clase 05.docx`.
+La solución fue desarrollada en Python con TensorFlow/Keras y sigue las guías proporcionadas en las clases, especialmente las instrucciones del Laboratorio No. 4 incluidas en
 
 ## Objetivo
 
